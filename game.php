@@ -1,13 +1,15 @@
+```php
 <?php
 session_start();
 
 // Membuat game baru
 if (!isset($_SESSION['angka'])) {
     $_SESSION['angka'] = rand(1, 50);
-    $_SESSION['kesempatan'] = 4;
+    $_SESSION['kesempatan'] = 3;
     $_SESSION['skor'] = 0;
     $_SESSION['pesan'] = "";
     $_SESSION['selesai'] = false;
+    $_SESSION['riwayat'] = [];
 }
 
 $angka = $_SESSION['angka'];
@@ -17,12 +19,15 @@ if (isset($_POST['tebak']) && !$_SESSION['selesai']) {
 
     $tebak = $_POST['tebak'];
 
+    // Simpan tebakan ke riwayat
+    $_SESSION['riwayat'][] = $tebak;
+
     // Kurangi kesempatan
     $_SESSION['kesempatan']--;
 
     if ($tebak == $angka) {
 
-        // Skor berdasarkan kesempatan yang tersisa
+        // Hitung skor
         $_SESSION['skor'] = $_SESSION['kesempatan'] * 100;
 
         $_SESSION['pesan'] = "
@@ -74,15 +79,17 @@ if (isset($_POST['tebak']) && !$_SESSION['selesai']) {
 if (isset($_POST['reset'])) {
 
     $_SESSION['angka'] = rand(1, 50);
-    $_SESSION['kesempatan'] = 4;
+    $_SESSION['kesempatan'] = 3;
     $_SESSION['skor'] = 0;
     $_SESSION['pesan'] = "";
     $_SESSION['selesai'] = false;
+    $_SESSION['riwayat'] = [];
 }
 
 $kesempatan = $_SESSION['kesempatan'];
 $skor = $_SESSION['skor'];
 $pesan = $_SESSION['pesan'];
+$riwayat = $_SESSION['riwayat'];
 
 ?>
 
@@ -91,7 +98,9 @@ $pesan = $_SESSION['pesan'];
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Game Tebak Angka</title>
 
@@ -104,9 +113,14 @@ $pesan = $_SESSION['pesan'];
         body {
             margin: 0;
             padding: 0;
+
             font-family: Arial, sans-serif;
 
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(
+                135deg,
+                #667eea,
+                #764ba2
+            );
 
             min-height: 100vh;
 
@@ -116,7 +130,7 @@ $pesan = $_SESSION['pesan'];
         }
 
         .game-container {
-            width: 400px;
+            width: 420px;
 
             background: white;
 
@@ -124,7 +138,9 @@ $pesan = $_SESSION['pesan'];
 
             border-radius: 20px;
 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, 0.25);
 
             text-align: center;
         }
@@ -217,7 +233,11 @@ $pesan = $_SESSION['pesan'];
         }
 
         .btn-tebak {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(
+                135deg,
+                #667eea,
+                #764ba2
+            );
         }
 
         .btn-reset {
@@ -255,6 +275,53 @@ $pesan = $_SESSION['pesan'];
             color: #dc2626;
 
             font-weight: bold;
+        }
+
+        /* Riwayat Tebakan */
+        .history {
+            margin-top: 20px;
+
+            padding: 15px;
+
+            background: #f3f4f6;
+
+            border-radius: 10px;
+
+            text-align: left;
+        }
+
+        .history-title {
+            font-weight: bold;
+
+            color: #4f46e5;
+
+            margin-bottom: 10px;
+
+            text-align: center;
+        }
+
+        .history-list {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            justify-content: center;
+
+            gap: 8px;
+        }
+
+        .guess-number {
+            background: white;
+
+            border: 1px solid #ddd;
+
+            padding: 8px 13px;
+
+            border-radius: 20px;
+
+            font-weight: bold;
+
+            color: #555;
         }
 
         .range {
@@ -326,7 +393,9 @@ $pesan = $_SESSION['pesan'];
                 type="submit"
                 name="tebak"
                 class="btn-tebak">
+
                 🎲 Tebak Sekarang
+
             </button>
 
         </form>
@@ -339,7 +408,9 @@ $pesan = $_SESSION['pesan'];
                 type="submit"
                 name="reset"
                 class="btn-reset">
+
                 🔄 Main Lagi
+
             </button>
 
         </form>
@@ -347,8 +418,35 @@ $pesan = $_SESSION['pesan'];
     <?php endif; ?>
 
 
+    <!-- Riwayat Tebakan -->
+
+    <?php if (count($riwayat) > 0): ?>
+
+        <div class="history">
+
+            <div class="history-title">
+                📋 Riwayat Tebakan
+            </div>
+
+            <div class="history-list">
+
+                <?php foreach ($riwayat as $nomor): ?>
+
+                    <div class="guess-number">
+                        <?= htmlspecialchars($nomor) ?>
+                    </div>
+
+                <?php endforeach; ?>
+
+            </div>
+
+        </div>
+
+    <?php endif; ?>
+
+
     <div class="range">
-        💡 Tebak angka dari 1 sampai 50 dengan 3 kesempatan.
+        💡 Tebak angka 1 sampai 50 dengan 3 kesempatan.
     </div>
 
 </div>
@@ -356,3 +454,4 @@ $pesan = $_SESSION['pesan'];
 </body>
 
 </html>
+```
