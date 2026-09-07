@@ -1,4 +1,3 @@
-```php
 <?php
 session_start();
 
@@ -19,22 +18,23 @@ if (isset($_POST['tebak']) && !$_SESSION['selesai']) {
 
     $tebak = $_POST['tebak'];
 
-    // Simpan tebakan ke riwayat
+    // Simpan riwayat tebakan
     $_SESSION['riwayat'][] = $tebak;
 
     // Kurangi kesempatan
     $_SESSION['kesempatan']--;
 
+    // Jika tebakan benar
     if ($tebak == $angka) {
 
-        // Hitung skor
         $_SESSION['skor'] = $_SESSION['kesempatan'] * 100;
 
         $_SESSION['pesan'] = "
             <div class='correct'>
-                🎉 Tebakan Anda BENAR!<br>
+                🎉 TEBakan ANDA BENAR!<br>
                 Angka rahasianya adalah <b>$angka</b><br>
-                🏆 Skor Anda: <b>{$_SESSION['skor']}</b>
+                🏆 Skor Anda: <b>{$_SESSION['skor']}</b><br>
+                🎮 GAME SELESAI!
             </div>
         ";
 
@@ -42,12 +42,13 @@ if (isset($_POST['tebak']) && !$_SESSION['selesai']) {
 
     } else {
 
+        // Petunjuk
         if ($tebak < $angka) {
 
             $_SESSION['pesan'] = "
                 <div class='wrong'>
-                    ❌ Tebakan Anda SALAH!<br>
-                    💡 Petunjuk: Angka rahasianya <b>lebih besar</b>.
+                    ❌ Tebakan Anda Salah!<br>
+                    💡 Angka rahasianya lebih besar.
                 </div>
             ";
 
@@ -55,8 +56,8 @@ if (isset($_POST['tebak']) && !$_SESSION['selesai']) {
 
             $_SESSION['pesan'] = "
                 <div class='wrong'>
-                    ❌ Tebakan Anda SALAH!<br>
-                    💡 Petunjuk: Angka rahasianya <b>lebih kecil</b>.
+                    ❌ Tebakan Anda Salah!<br>
+                    💡 Angka rahasianya lebih kecil.
                 </div>
             ";
         }
@@ -64,16 +65,19 @@ if (isset($_POST['tebak']) && !$_SESSION['selesai']) {
         // Jika kesempatan habis
         if ($_SESSION['kesempatan'] <= 0) {
 
-            $_SESSION['pesan'] .= "
-                <br>
-                😢 Kesempatan Anda sudah habis!<br>
-                Angka yang benar adalah <b>$angka</b>
+            $_SESSION['pesan'] = "
+                <div class='wrong'>
+                    😢 GAME SELESAI!<br>
+                    Kesempatan Anda sudah habis.<br>
+                    Angka yang benar adalah <b>$angka</b>
+                </div>
             ";
 
             $_SESSION['selesai'] = true;
         }
     }
 }
+
 
 // Tombol Main Lagi
 if (isset($_POST['reset'])) {
@@ -84,6 +88,10 @@ if (isset($_POST['reset'])) {
     $_SESSION['pesan'] = "";
     $_SESSION['selesai'] = false;
     $_SESSION['riwayat'] = [];
+
+    // Kembali ke halaman game
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 $kesempatan = $_SESSION['kesempatan'];
@@ -97,6 +105,7 @@ $riwayat = $_SESSION['riwayat'];
 <html lang="id">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -277,7 +286,6 @@ $riwayat = $_SESSION['riwayat'];
             font-weight: bold;
         }
 
-        /* Riwayat Tebakan */
         .history {
             margin-top: 20px;
 
@@ -286,8 +294,6 @@ $riwayat = $_SESSION['riwayat'];
             background: #f3f4f6;
 
             border-radius: 10px;
-
-            text-align: left;
         }
 
         .history-title {
@@ -296,8 +302,6 @@ $riwayat = $_SESSION['riwayat'];
             color: #4f46e5;
 
             margin-bottom: 10px;
-
-            text-align: center;
         }
 
         .history-list {
@@ -366,6 +370,7 @@ $riwayat = $_SESSION['riwayat'];
 
     </div>
 
+
     <?php if ($pesan != ""): ?>
 
         <div class="result">
@@ -418,8 +423,6 @@ $riwayat = $_SESSION['riwayat'];
     <?php endif; ?>
 
 
-    <!-- Riwayat Tebakan -->
-
     <?php if (count($riwayat) > 0): ?>
 
         <div class="history">
@@ -446,7 +449,7 @@ $riwayat = $_SESSION['riwayat'];
 
 
     <div class="range">
-        💡 Tebak angka 1 sampai 50 dengan 3 kesempatan.
+        🎮 Game memiliki 3 kesempatan untuk menebak.
     </div>
 
 </div>
@@ -454,4 +457,3 @@ $riwayat = $_SESSION['riwayat'];
 </body>
 
 </html>
-```
