@@ -1,6 +1,70 @@
 <?php
+session_start();
 
-echo '
+// Membuat angka rahasia dan kesempatan saat game pertama dimulai
+if (!isset($_SESSION['angka'])) {
+    $_SESSION['angka'] = rand(1, 5);
+    $_SESSION['kesempatan'] = 3;
+    $_SESSION['pesan'] = "";
+}
+
+$angka = $_SESSION['angka'];
+
+// Jika tombol Tebak ditekan
+if (isset($_POST['tebak'])) {
+
+    $tebak = $_POST['tebak'];
+
+    // Kurangi kesempatan
+    $_SESSION['kesempatan']--;
+
+    if ($tebak == $angka) {
+        $_SESSION['pesan'] = "
+            <div class='correct'>
+                🎉 Tebakan Anda BENAR!<br>
+                Angka rahasianya adalah <b>$angka</b>
+            </div>
+        ";
+
+        // Tandai game selesai
+        $_SESSION['selesai'] = true;
+
+    } else {
+
+        if ($_SESSION['kesempatan'] > 0) {
+            $_SESSION['pesan'] = "
+                <div class='wrong'>
+                    ❌ Tebakan Anda SALAH!<br>
+                    Coba lagi!
+                </div>
+            ";
+        } else {
+            $_SESSION['pesan'] = "
+                <div class='wrong'>
+                    😢 Kesempatan Anda sudah habis!<br>
+                    Angka yang benar adalah <b>$angka</b>
+                </div>
+            ";
+
+            // Tandai game selesai
+            $_SESSION['selesai'] = true;
+        }
+    }
+}
+
+// Tombol Main Lagi
+if (isset($_POST['reset'])) {
+    $_SESSION['angka'] = rand(1, 5);
+    $_SESSION['kesempatan'] = 3;
+    $_SESSION['pesan'] = "";
+    $_SESSION['selesai'] = false;
+}
+
+$kesempatan = $_SESSION['kesempatan'];
+$pesan = $_SESSION['pesan'];
+
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -33,22 +97,29 @@ echo '
             text-align: center;
         }
 
+        .game-icon {
+            font-size: 55px;
+        }
+
         .game-title {
             font-size: 30px;
             font-weight: bold;
             color: #4f46e5;
-            margin-bottom: 10px;
-        }
-
-        .game-icon {
-            font-size: 55px;
-            margin-bottom: 10px;
+            margin: 10px 0;
         }
 
         .description {
             color: #666;
-            font-size: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+        }
+
+        .chance {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #4f46e5;
         }
 
         .input-number {
@@ -66,31 +137,39 @@ echo '
             border-color: #667eea;
         }
 
-        .btn-tebak {
+        .btn-tebak,
+        .btn-reset {
             width: 100%;
             padding: 14px;
             border: none;
             border-radius: 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
         }
 
-        .btn-tebak:hover {
+        .btn-tebak {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .btn-reset {
+            background: #22c55e;
+            margin-top: 10px;
+        }
+
+        .btn-tebak:hover,
+        .btn-reset:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            opacity: 0.9;
         }
 
         .result {
-            margin-top: 20px;
+            margin: 20px 0;
             padding: 15px;
             border-radius: 10px;
-            background: #f3f4f6;
-            color: #333;
-            font-size: 16px;
+            background: #f8fafc;
             line-height: 1.8;
         }
 
@@ -123,55 +202,54 @@ echo '
     </div>
 
     <div class="description">
-        Tebak angka rahasia dari <b>1 sampai 5</b>!
+        Tebak angka rahasia dari <b>1 sampai 5</b>
     </div>
-';
 
-$x = rand(1, 5);
+    <div class="chance">
+        🎯 Kesempatan tersisa: <?= $kesempatan ?>
+    </div>
 
-// Jika tombol Tebak sudah ditekan
-if (isset($_POST['tebak'])) {
+    <?php if ($pesan != ""): ?>
+        <div class="result">
+            <?= $pesan ?>
+        </div>
+    <?php endif; ?>
 
-    $tebak = $_POST['tebak'];
+    <?php if (!isset($_SESSION['selesai']) || $_SESSION['selesai'] == false): ?>
 
-    echo '<div class="result">';
-    echo "Angka yang Anda tebak: <b>$tebak</b><br>";
+        <form method="POST">
 
-    if ($tebak == $x) {
-        echo '<span class="correct">🎉 Tebakan Anda Benar!</span>';
-    } else {
-        echo '<span class="wrong">❌ Tebakan Anda Salah!</span>';
-    }
+            <input
+                type="number"
+                name="tebak"
+                class="input-number"
+                min="1"
+                max="5"
+                placeholder="Masukkan angka 1 - 5"
+                required
+            >
 
-    echo '</div>';
-}
+            <button type="submit" name="tebak" class="btn-tebak">
+                🎲 Tebak Sekarang
+            </button>
 
-echo '
-    <form method="POST">
+        </form>
 
-        <input
-            type="number"
-            name="tebak"
-            class="input-number"
-            min="1"
-            max="5"
-            placeholder="Masukkan angka 1 - 5"
-            required
-        >
+    <?php else: ?>
 
-        <button type="submit" class="btn-tebak">
-            🎲 Tebak Sekarang
-        </button>
+        <form method="POST">
+            <button type="submit" name="reset" class="btn-reset">
+                🔄 Main Lagi
+            </button>
+        </form>
 
-    </form>
+    <?php endif; ?>
 
     <div class="range">
-        💡 Pilih angka antara 1 sampai 5
+        💡 Kamu memiliki 3 kesempatan untuk menebak.
     </div>
 
 </div>
 
 </body>
 </html>
-';
-?>
