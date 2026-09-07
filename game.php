@@ -3,8 +3,8 @@ session_start();
 
 // Membuat game baru
 if (!isset($_SESSION['angka'])) {
-    $_SESSION['angka'] = rand(1, 5);
-    $_SESSION['kesempatan'] = 3;
+    $_SESSION['angka'] = rand(1, 50);
+    $_SESSION['kesempatan'] = 4;
     $_SESSION['skor'] = 0;
     $_SESSION['pesan'] = "";
     $_SESSION['selesai'] = false;
@@ -38,13 +38,16 @@ if (isset($_POST['tebak']) && !$_SESSION['selesai']) {
     } else {
 
         if ($tebak < $angka) {
+
             $_SESSION['pesan'] = "
                 <div class='wrong'>
                     ❌ Tebakan Anda SALAH!<br>
                     💡 Petunjuk: Angka rahasianya <b>lebih besar</b>.
                 </div>
             ";
+
         } else {
+
             $_SESSION['pesan'] = "
                 <div class='wrong'>
                     ❌ Tebakan Anda SALAH!<br>
@@ -70,8 +73,8 @@ if (isset($_POST['tebak']) && !$_SESSION['selesai']) {
 // Tombol Main Lagi
 if (isset($_POST['reset'])) {
 
-    $_SESSION['angka'] = rand(1, 5);
-    $_SESSION['kesempatan'] = 3;
+    $_SESSION['angka'] = rand(1, 50);
+    $_SESSION['kesempatan'] = 4;
     $_SESSION['skor'] = 0;
     $_SESSION['pesan'] = "";
     $_SESSION['selesai'] = false;
@@ -85,6 +88,7 @@ $pesan = $_SESSION['pesan'];
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,6 +96,7 @@ $pesan = $_SESSION['pesan'];
     <title>Game Tebak Angka</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -100,7 +105,9 @@ $pesan = $_SESSION['pesan'];
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
+
             background: linear-gradient(135deg, #667eea, #764ba2);
+
             min-height: 100vh;
 
             display: flex;
@@ -110,8 +117,11 @@ $pesan = $_SESSION['pesan'];
 
         .game-container {
             width: 400px;
+
             background: white;
+
             padding: 35px;
+
             border-radius: 20px;
 
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
@@ -125,43 +135,59 @@ $pesan = $_SESSION['pesan'];
 
         .game-title {
             font-size: 30px;
+
             font-weight: bold;
+
             color: #4f46e5;
+
             margin: 10px 0;
         }
 
         .description {
             color: #666;
+
             margin-bottom: 20px;
         }
 
         .info {
             display: flex;
+
             justify-content: space-between;
+
             gap: 10px;
+
             margin-bottom: 20px;
         }
 
         .info-box {
             width: 50%;
+
             background: #f3f4f6;
+
             padding: 12px;
+
             border-radius: 10px;
+
             font-weight: bold;
+
             color: #4f46e5;
         }
 
         .input-number {
             width: 100%;
+
             padding: 14px;
 
             border: 2px solid #ddd;
+
             border-radius: 10px;
 
             font-size: 18px;
+
             text-align: center;
 
             outline: none;
+
             margin-bottom: 15px;
         }
 
@@ -172,16 +198,21 @@ $pesan = $_SESSION['pesan'];
         .btn-tebak,
         .btn-reset {
             width: 100%;
+
             padding: 14px;
 
             border: none;
+
             border-radius: 10px;
 
             color: white;
+
             font-size: 17px;
+
             font-weight: bold;
 
             cursor: pointer;
+
             transition: 0.3s;
         }
 
@@ -191,20 +222,24 @@ $pesan = $_SESSION['pesan'];
 
         .btn-reset {
             background: #22c55e;
+
             margin-top: 10px;
         }
 
         .btn-tebak:hover,
         .btn-reset:hover {
             transform: translateY(-2px);
+
             opacity: 0.9;
         }
 
         .result {
             margin: 20px 0;
+
             padding: 15px;
 
             border-radius: 10px;
+
             background: #f8fafc;
 
             line-height: 1.8;
@@ -212,34 +247,42 @@ $pesan = $_SESSION['pesan'];
 
         .correct {
             color: #16a34a;
+
             font-weight: bold;
         }
 
         .wrong {
             color: #dc2626;
+
             font-weight: bold;
         }
 
         .range {
             margin-top: 20px;
+
             font-size: 13px;
+
             color: #888;
         }
+
     </style>
+
 </head>
 
 <body>
 
 <div class="game-container">
 
-    <div class="game-icon">🎯</div>
+    <div class="game-icon">
+        🎯
+    </div>
 
     <div class="game-title">
         Game Tebak Angka
     </div>
 
     <div class="description">
-        Tebak angka rahasia dari <b>1 sampai 5</b>
+        Tebak angka rahasia dari <b>1 sampai 50</b>
     </div>
 
     <div class="info">
@@ -274,8 +317,8 @@ $pesan = $_SESSION['pesan'];
                 name="tebak"
                 class="input-number"
                 min="1"
-                max="5"
-                placeholder="Masukkan angka 1 - 5"
+                max="50"
+                placeholder="Masukkan angka 1 - 50"
                 required
             >
 
@@ -305,10 +348,11 @@ $pesan = $_SESSION['pesan'];
 
 
     <div class="range">
-        💡 Kamu memiliki 3 kesempatan untuk menebak.
+        💡 Tebak angka dari 1 sampai 50 dengan 3 kesempatan.
     </div>
 
 </div>
 
 </body>
+
 </html>
